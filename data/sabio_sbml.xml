@@ -1,0 +1,214 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<sbml xmlns="http://www.sbml.org/sbml/level3/version1/core" level="3" version="1">
+  <model name="SABIOmdl18Sep2018244">
+<notes><body xmlns="http://www.w3.org/1999/xhtml">
+<p>
+This model has been created with the help of the SABIO-RK Database
+(http://sabio.h-its.org/) 
+ (c) 2005-2018 HITS gGmbH http://www.h-its.org
+
+</p><br/>
+To cite SABIO-RK Database, please use
+"http://www.ncbi.nlm.nih.gov/pubmed/22102587"
+<br/>
+SABIO-RK - database for biochemical reaction kinetics. Wittig U, Kania R, Golebiewski M, Rey M, Shi L, Jong L, Algaa E, Weidemann A, Sauer-Danzwith H, Mir S, Krebs O, Bittkowski M, Wetsch E, Rojas I, Mueller W. Nucleic Acids Res. 2012;40(Database issue)790-6
+</body></notes>
+      <listOfFunctionDefinitions>
+      <functionDefinition id="KL_10020">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">        
+          <lambda>
+            <bvar>
+              <ci> Kma </ci>
+            </bvar>
+            <bvar>
+              <ci> B </ci>
+            </bvar>
+            <bvar>
+              <ci> A </ci>
+            </bvar>
+            <bvar>
+              <ci> Kmb </ci>
+            </bvar>
+            <notanumber/>
+          </lambda>
+        </math>
+      </functionDefinition>
+    </listOfFunctionDefinitions>
+    <listOfUnitDefinitions>
+      <unitDefinition id="mM" name="mM">
+        <listOfUnits>
+          <unit scale="0" exponent="-1" multiplier="1" kind="litre"/>
+          <unit scale="-3" exponent="1" multiplier="1" kind="mole"/>
+        </listOfUnits>
+      </unitDefinition>
+    </listOfUnitDefinitions>
+    <listOfCompartments>
+      <compartment id="compart_Cell" constant="true" name="Cell"/>
+    </listOfCompartments>
+    <listOfSpecies>
+      <species id="SPC_1406_Cell" initialConcentration="1" constant="false" hasOnlySubstanceUnits="false" name="Glucose" metaid="META_SPC_1406_Cell" boundaryCondition="false" compartment="compart_Cell">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#META_SPC_1406_Cell">
+              <bqbiol:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://identifiers.org/chebi/CHEBI:17234"/>
+                  <rdf:li rdf:resource="http://identifiers.org/kegg.compound/C00031"/>
+                  <rdf:li rdf:resource="http://identifiers.org/kegg.compound/C00293"/>
+                </rdf:Bag>
+              </bqbiol:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+</species>
+      <species id="SPC_34_Cell" initialConcentration="1" constant="false" hasOnlySubstanceUnits="false" name="ATP" metaid="META_SPC_34_Cell" boundaryCondition="false" compartment="compart_Cell">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#META_SPC_34_Cell">
+              <bqbiol:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://identifiers.org/chebi/CHEBI:15422"/>
+                  <rdf:li rdf:resource="http://identifiers.org/chebi/CHEBI:30616"/>
+                  <rdf:li rdf:resource="http://identifiers.org/kegg.compound/C00002"/>
+                </rdf:Bag>
+              </bqbiol:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+</species>
+      <species id="SPC_1404_Cell" initialConcentration="1" constant="false" hasOnlySubstanceUnits="false" name="Glucose 6-phosphate" metaid="META_SPC_1404_Cell" boundaryCondition="false" compartment="compart_Cell">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#META_SPC_1404_Cell">
+              <bqbiol:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://identifiers.org/chebi/CHEBI:4170"/>
+                  <rdf:li rdf:resource="http://identifiers.org/kegg.compound/C00092"/>
+                </rdf:Bag>
+              </bqbiol:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+</species>
+      <species id="SPC_35_Cell" initialConcentration="1" constant="false" hasOnlySubstanceUnits="false" name="ADP" metaid="META_SPC_35_Cell" boundaryCondition="false" compartment="compart_Cell">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#META_SPC_35_Cell">
+              <bqbiol:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://identifiers.org/chebi/CHEBI:16761"/>
+                  <rdf:li rdf:resource="http://identifiers.org/kegg.compound/C00008"/>
+                </rdf:Bag>
+              </bqbiol:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+</species>
+      <species id="ENZ_143987_Cell" initialConcentration="1" constant="false" hasOnlySubstanceUnits="false" name="hexokinase(Enzyme) wildtype" metaid="META_ENZ_143987_Cell" boundaryCondition="false" compartment="compart_Cell">
+        <annotation>
+<sbrk:sabiork xmlns:sbrk="http://sabiork.h-its.org">
+<sbrk:modifierType>Modifier-Catalyst</sbrk:modifierType>
+</sbrk:sabiork>                  <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#META_ENZ_143987_Cell">
+              <bqbiol:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://identifiers.org/uniprot/Q6SYC5"/>
+                </rdf:Bag>
+              </bqbiol:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+</species>
+    </listOfSpecies>
+    <listOfReactions>
+      <reaction id="REAC_0" metaid="META_REAC_0" reversible="true" fast="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#META_REAC_0">
+              <bqbiol:isVersionOf>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://identifiers.org/ec-code/2.7.1.1"/>
+                </rdf:Bag>
+              </bqbiol:isVersionOf>
+              <bqbiol:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://identifiers.org/kegg.reaction/R00299"/>
+                </rdf:Bag>
+              </bqbiol:is>
+              <bqbiol:hasTaxon>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://identifiers.org/taxonomy/6253"/>
+                </rdf:Bag>
+              </bqbiol:hasTaxon>
+              <bqbiol:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://identifiers.org/sabiork.reaction/6915"/>
+                </rdf:Bag>
+              </bqbiol:is>
+              <bqbiol:occursIn>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://identifiers.org/bto/BTO:0000887"/>
+                </rdf:Bag>
+              </bqbiol:occursIn>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+        <listOfReactants>
+          <speciesReference constant="true" species="SPC_1406_Cell" sboTerm="SBO:0000015" stoichiometry="1"/>
+          <speciesReference constant="true" species="SPC_34_Cell" sboTerm="SBO:0000015" stoichiometry="1"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference constant="true" species="SPC_1404_Cell" sboTerm="SBO:0000011" stoichiometry="1"/>
+          <speciesReference constant="true" species="SPC_35_Cell" sboTerm="SBO:0000011" stoichiometry="1"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="ENZ_143987_Cell" sboTerm="SBO:0000460"/>
+        </listOfModifiers>
+        <kineticLaw metaid="META_KL_10020">
+          <annotation>
+<sbrk:sabiork xmlns:sbrk="http://sabiork.h-its.org">
+<sbrk:kineticLawID>10020</sbrk:kineticLawID>
+<sbrk:experimentalConditions>
+<sbrk:temperature>
+<sbrk:startValueTemperature>30.0</sbrk:startValueTemperature>
+<sbrk:temperatureUnit>°C</sbrk:temperatureUnit>
+</sbrk:temperature>
+<sbrk:pH>
+<sbrk:startValuepH>7.4</sbrk:startValuepH>
+</sbrk:pH>
+<sbrk:buffer> 50 mM Tris, 0.75 mM NADP, 8 mM MgCl2, 0.5 U/ml Glucose 6-phosphate dehydrogenase</sbrk:buffer>
+</sbrk:experimentalConditions>
+</sbrk:sabiork>
+                      <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+              <rdf:Description rdf:about="#META_KL_10020">
+                <bqbiol:isDescribedBy>
+                  <rdf:Bag>
+                    <rdf:li rdf:resource="http://identifiers.org/pubmed/1247596"/>
+                  </rdf:Bag>
+                </bqbiol:isDescribedBy>
+                <bqbiol:isDescribedBy>
+                  <rdf:Bag>
+                    <rdf:li rdf:resource="http://identifiers.org/sabiork.kineticrecord/10020"/>
+                  </rdf:Bag>
+                </bqbiol:isDescribedBy>
+              </rdf:Description>
+            </rdf:RDF>
+          </annotation>
+          <math xmlns="http://www.w3.org/1998/Math/MathML">          
+            <apply>
+              <ci> KL_10020 </ci>
+              <ci> Kma_SPC_34_Cell </ci>
+              <ci> SPC_1406_Cell </ci>
+              <ci> SPC_34_Cell </ci>
+              <ci> Kmb_SPC_1406_Cell </ci>
+            </apply>
+          </math>
+                  <listOfLocalParameters>
+            <localParameter id="Kma_SPC_34_Cell" name="Kma_ATP" value="0.22" sboTerm="SBO:0000027" units="mM"/>
+            <localParameter id="Kmb_SPC_1406_Cell" name="Kmb_Glucose" value="4.7" sboTerm="SBO:0000027" units="mM"/>
+          </listOfLocalParameters>
+        </kineticLaw>
+      </reaction>
+    </listOfReactions>
+  </model>
+</sbml>
