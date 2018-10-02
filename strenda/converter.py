@@ -7,6 +7,7 @@ To view a copy of this license, visit <http://opensource.org/licenses/MIT/>.
 
 @author:  neilswainston
 '''
+# pylint: disable=too-many-instance-attributes
 import re
 import sys
 import uuid
@@ -71,7 +72,7 @@ class StrendaHandler(xml.sax.ContentHandler):
                 self.__species.setInitialConcentration(float(attrs['value']))
                 # attrs['unit']
 
-    def endElement(self, name):
+    def endElement(self, _):
         self.__start = False
 
         # if name == 'dataset':
@@ -96,18 +97,18 @@ class StrendaHandler(xml.sax.ContentHandler):
             elif self.__element_name == 'stoichiometry':
                 self.__spec_ref.setStoichiometry(float(content))
 
-    def writeSBMLToFile(self, filename):
+    def write_sbml_to_file(self, filename):
         '''Write SBML to file.'''
         writeSBMLToFile(self.__document, filename)
 
-    def writeSBMLToString(self):
+    def write_sbml_to_string(self):
         '''Write SBML to string.'''
         return writeSBMLToString(self.__document)
 
 
 def _get_id(id_in):
     '''Format id.'''
-    return re.sub('\W+', '_', str(id_in))
+    return re.sub(r'\W+', '_', str(id_in))
 
 
 def _add_annotation(obj, resource):
@@ -131,7 +132,7 @@ def convert(in_filename, out_filename='strenda_sbml.xml'):
     with open(in_filename, 'r') as fle:
         parser.parse(fle)
 
-    handler.writeSBMLToFile(out_filename)
+    handler.write_sbml_to_file(out_filename)
 
 
 def main(args):
