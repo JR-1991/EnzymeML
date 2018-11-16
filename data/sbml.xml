@@ -24,7 +24,7 @@
 				constant="true" />
 		</listOfCompartments>
 		<listOfSpecies>
-			<species id="P51853" metaid="meta_benzlal_lys"
+			<species id="E" metaid="meta_E"
 				name="benzaldehyde-lyase" compartment="Cell"
 				initialConcentration="1" substanceUnits="mmole"
 				hasOnlySubstanceUnits="true" boundaryCondition="false"
@@ -34,7 +34,7 @@
 						xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
 						xmlns:bqmodel="http://biomodels.net/model-qualifiers/"
 						xmlns:bqbiol="http://biomodels.net/biology-qualifiers/">
-						<rdf:Description rdf:about="#meta_benzlal_lys">
+						<rdf:Description rdf:about="#meta_E">
 							<bqbiol:isVersionOf>
 								<rdf:Bag>
 									<rdf:li
@@ -48,7 +48,7 @@
 					</sequence>
 				</annotation>
 			</species>
-			<species id="CAS_93_02_7" metaid="meta_dmb"
+			<species id="A" metaid="meta_A"
 				name="dimethoxy-benzaldehyde" compartment="Cell"
 				initialConcentration="4" substanceUnits="mmole"
 				hasOnlySubstanceUnits="true" boundaryCondition="false"
@@ -58,7 +58,7 @@
 					xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
 					xmlns:bqmodel="http://biomodels.net/model-qualifiers/"
 					xmlns:bqbiol="http://biomodels.net/biology-qualifiers/">
-					<rdf:Description rdf:about="#meta_dmb">
+					<rdf:Description rdf:about="#meta_A">
 						<bqbiol:is>
 							<rdf:Bag>
 								<rdf:li
@@ -68,7 +68,7 @@
 					</rdf:Description>
 				</rdf:RDF>
 			</annotation>
-			<species id="CHEBI_17169" metaid="meta_benz"
+			<species id="B" metaid="meta_B"
 				name="benzaldehyde" compartment="Cell" initialConcentration="0"
 				substanceUnits="mmole" hasOnlySubstanceUnits="true"
 				boundaryCondition="false" constant="false" sboTerm="SBO:0000247">
@@ -77,7 +77,7 @@
 						xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
 						xmlns:bqmodel="http://biomodels.net/model-qualifiers/"
 						xmlns:bqbiol="http://biomodels.net/biology-qualifiers/">
-						<rdf:Description rdf:about="#meta_benz">
+						<rdf:Description rdf:about="#meta_B">
 							<bqbiol:is>
 								<rdf:Bag>
 									<rdf:li
@@ -93,15 +93,15 @@
 			<reaction id="Michaelis_Menten_Kinetic" reversible="false"
 				fast="false" sboTerm="SBO:0000231">
 				<listOfReactants>
-					<speciesReference species="CAS_93_02_7"
+					<speciesReference species="A"
 						sboTerm="SBO:0000010" constant="false" stoichiometry="1" />
 				</listOfReactants>
 				<listOfProducts>
-					<speciesReference species="CHEBI_17169"
+					<speciesReference species="B"
 						sboTerm="SBO:0000011" constant="false" stoichiometry="1" />
 				</listOfProducts>
 				<listOfModifiers>
-					<modifierSpeciesReference species="P51853"
+					<modifierSpeciesReference species="E"
 						sboTerm="SBO:0000019" constant="true" />
 				</listOfModifiers>
 				<kineticLaw>
@@ -126,8 +126,6 @@
 							sboTerm="SBO:0000322" />
 						<localParameter id="kcat" units="s_1" value="100"
 							sboTerm="SBO:0000025" />
-						<localParameter id="E" units="mmole" value="100" />
-						<localParameter id="A" units="mmole" value="100" />
 					</listOfLocalParameters>
 				</kineticLaw>
 			</reaction>
