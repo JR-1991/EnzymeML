@@ -82,7 +82,7 @@
 		</listOfSpecies>
 		<listOfReactions>
 			<reaction id="Michaelis_Menten_Kinetic" reversible="false"
-				fast="false" sboTerm="SBO:0000231">
+				sboTerm="SBO:0000231">
 				<listOfReactants>
 					<speciesReference species="A"
 						sboTerm="SBO:0000010" constant="false" stoichiometry="1" />
@@ -93,7 +93,7 @@
 				</listOfProducts>
 				<listOfModifiers>
 					<modifierSpeciesReference species="E"
-						sboTerm="SBO:0000019" constant="true" />
+						sboTerm="SBO:0000019"/>
 				</listOfModifiers>
 				<kineticLaw>
 					<math xmlns="http://www.w3.org/1998/Math/MathML">
