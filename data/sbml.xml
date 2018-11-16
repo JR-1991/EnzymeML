@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<sbml xmlns="http://www.sbml.org/sbml/level2/version5" level="2"
-	version="5">
+<sbml xmlns="http://www.sbml.org/sbml/level3/version2/core"
+	level="3" version="2" xmlns:xhtml="http://www.w3.org/1999/xhtml">
 	<model>
 		<listOfUnitDefinitions>
-			<unitDefinition id="mM" name="mM">
+			<unitDefinition id="mmole" name="mmole">
 				<listOfUnits>
-					<unit scale="0" exponent="-1" multiplier="1" kind="litre" />
 					<unit scale="-3" exponent="1" multiplier="1" kind="mole" />
 				</listOfUnits>
 			</unitDefinition>
@@ -19,37 +18,28 @@
 					<unit scale="0" exponent="1" multiplier="1" kind="kelvin" />
 				</listOfUnits>
 			</unitDefinition>
-			<unitDefinition id="min" name="min">
+			<unitDefinition id="l" name="litre">
 				<listOfUnits>
-					<unit scale="0" exponent="1" multiplier="60" kind="second" />
-				</listOfUnits>
-			</unitDefinition>
-			<unitDefinition id="mm^3" name="min">
-				<listOfUnits>
-					<unit scale="-3" exponent="3" multiplier="1" kind="meter" />
+					<unit scale="0" exponent="1" multiplier="1" kind="litre" />
 				</listOfUnits>
 			</unitDefinition>
 		</listOfUnitDefinitions>
-		<listOfSpeciesTypes>
-			<speciesType id="E" name="Enzyme E" sboTerm="SBO:0000014" />
-			<speciesType id="A" name="Substrate A"
-				sboTerm="SBO:0000015" />
-			<speciesType id="P" name="Product P"
-				sboTerm="SBO:0000011" />
-		</listOfSpeciesTypes>
 		<listOfCompartments>
-			<compartment id="Cell" name="Cell" size="1" unit="mm^3" />
+			<compartment id="Cell" name="Cell" size="1" units="l"
+				constant="true" />
 		</listOfCompartments>
 		<listOfSpecies>
-			<species id="P51853" name="benzaldehyde-lyase"
-				speciesType="E" compartment="Cell" initialConcentration="1"
-				substanceUnits="mM" metaid="meta_benzlal_lys" sboTerm="SBO:0000252">
+			<species id="P51853" metaid="meta_benzlal_lys"
+				name="benzaldehyde-lyase" compartment="Cell"
+				initialConcentration="1" substanceUnits="mmole"
+				hasOnlySubstanceUnits="true" boundaryCondition="false"
+				constant="false" sboTerm="SBO:0000252">
 				<annotation>
 					<rdf:RDF
 						xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
 						xmlns:bqmodel="http://biomodels.net/model-qualifiers/"
 						xmlns:bqbiol="http://biomodels.net/biology-qualifiers/">
-						<rdf:Description rdf:about="#meta_ benzlal_lys ">
+						<rdf:Description rdf:about="#meta_benzlal_lys">
 							<bqbiol:isVersionOf>
 								<rdf:Bag>
 									<rdf:li
@@ -63,9 +53,11 @@
 					</sequence>
 				</annotation>
 			</species>
-			<species id="CAS_93_02_7" name="dimethoxy-benzaldehyde"
-				speciesType="A" compartment="Cell" initialConcentration="4"
-				substanceUnits="mM" metaid="meta_dmb" sboTerm="SBO:0000247" />
+			<species id="CAS_93_02_7" metaid="meta_dmb"
+				name="dimethoxy-benzaldehyde" compartment="Cell"
+				initialConcentration="4" substanceUnits="mmole"
+				hasOnlySubstanceUnits="true" boundaryCondition="false"
+				constant="false" sboTerm="SBO:0000247" />
 			<annotation>
 				<rdf:RDF
 					xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
@@ -75,15 +67,16 @@
 						<bqbiol:is>
 							<rdf:Bag>
 								<rdf:li
-									rdf:resource="http://identifiers.org/cas/ CAS_93_02_7" />
+									rdf:resource="http://identifiers.org/cas/CAS_93_02_7" />
 							</rdf:Bag>
 						</bqbiol:is>
 					</rdf:Description>
 				</rdf:RDF>
 			</annotation>
-			<species id="CHEBI_17169" name="benzaldehyde" speciesType="P"
-				compartment="Cell" initialConcentration="0" substanceUnits="mM"
-				metaid="meta_benz" sboTerm="SBO:0000247">
+			<species id="CHEBI_17169" metaid="meta_benz"
+				name="benzaldehyde" compartment="Cell" initialConcentration="0"
+				substanceUnits="mmole" hasOnlySubstanceUnits="true"
+				boundaryCondition="false" constant="false" sboTerm="SBO:0000247">
 				<annotation>
 					<rdf:RDF
 						xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
@@ -102,19 +95,19 @@
 			</species>
 		</listOfSpecies>
 		<listOfReactions>
-			<reaction id="Michaelis_Menten_Kinetic"
-				sboTerm="SBO:0000449">
+			<reaction id="Michaelis_Menten_Kinetic" reversible="false"
+				fast="false" sboTerm="SBO:0000231">
 				<listOfReactants>
 					<speciesReference species="CAS_93_02_7"
-						sboTerm="SBO:0000015" stoichiometry="1" />
+						sboTerm="SBO:0000010" constant="false" stoichiometry="1" />
 				</listOfReactants>
 				<listOfProducts>
 					<speciesReference species="CHEBI_17169"
-						sboTerm="SBO:0000011" stoichiometry="1" />
+						sboTerm="SBO:0000011" constant="false" stoichiometry="1" />
 				</listOfProducts>
 				<listOfModifiers>
 					<modifierSpeciesReference species="P51853"
-						sboTerm="SBO:0000014" />
+						sboTerm="SBO:0000019" constant="true" />
 				</listOfModifiers>
 				<kineticLaw>
 					<math xmlns="http://www.w3.org/1998/Math/MathML">
@@ -133,17 +126,14 @@
 							</apply>
 						</apply>
 					</math>
-					<listOfParameters>
-						<parameter id="KMA" units="mM" value="100">
-							<annotation>
-								<sde xmlns="http://www.w3.org/1998/Math/MathML" value="5" />
-							</annotation>
-						</parameter>
-						<parameter id="kcat" units="katal" value="100"
+					<listOfLocalParameters>
+						<localParameter id="KMA" units="mmole" value="100"
+							sboTerm="SBO:0000322" />
+						<localParameter id="kcat" units="s_1" value="100"
 							sboTerm="SBO:0000025" />
-						<parameter id="E" units="mM" value="100" />
-						<parameter id="A" units="mM" value="100" />
-					</listOfParameters>
+						<localParameter id="E" units="mmole" value="100" />
+						<localParameter id="A" units="mmole" value="100" />
+					</listOfLocalParameters>
 				</kineticLaw>
 			</reaction>
 		</listOfReactions>
