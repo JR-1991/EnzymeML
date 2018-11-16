@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sbml xmlns="http://www.sbml.org/sbml/level3/version2/core"
 	level="3" version="2" xmlns:xhtml="http://www.w3.org/1999/xhtml">
-	<model>
+	<model timeUnits="second" extentUnits="mmole">
 		<listOfUnitDefinitions>
 			<unitDefinition id="mmole" name="mmole">
 				<listOfUnits>
@@ -18,14 +18,9 @@
 					<unit scale="0" exponent="1" multiplier="1" kind="kelvin" />
 				</listOfUnits>
 			</unitDefinition>
-			<unitDefinition id="l" name="litre">
-				<listOfUnits>
-					<unit scale="0" exponent="1" multiplier="1" kind="litre" />
-				</listOfUnits>
-			</unitDefinition>
 		</listOfUnitDefinitions>
 		<listOfCompartments>
-			<compartment id="Cell" name="Cell" size="1" units="l"
+			<compartment id="Cell" name="Cell" size="1" units="litre"
 				constant="true" />
 		</listOfCompartments>
 		<listOfSpecies>
