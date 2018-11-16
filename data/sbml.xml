@@ -1,32 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sbml xmlns="http://www.sbml.org/sbml/level3/version2/core"
 	level="3" version="2" xmlns:xhtml="http://www.w3.org/1999/xhtml">
-	<model timeUnits="second" extentUnits="mmole">
+	<model timeUnits="second" extentUnits="mole">
 		<listOfUnitDefinitions>
-			<unitDefinition id="mmole" name="mmole">
-				<listOfUnits>
-					<unit scale="-3" exponent="1" multiplier="1" kind="mole" />
-				</listOfUnits>
-			</unitDefinition>
 			<unitDefinition id="s_1" name="s_1">
 				<listOfUnits>
 					<unit scale="0" exponent="-1" multiplier="1" kind="second" />
 				</listOfUnits>
 			</unitDefinition>
-			<unitDefinition id="K" name="K">
-				<listOfUnits>
-					<unit scale="0" exponent="1" multiplier="1" kind="kelvin" />
-				</listOfUnits>
-			</unitDefinition>
 		</listOfUnitDefinitions>
 		<listOfCompartments>
-			<compartment id="Cell" name="Cell" size="1" units="litre"
+			<compartment id="Cell" name="Cell"
+				size="1" units="litre" dimensions="3"
 				constant="true" />
 		</listOfCompartments>
 		<listOfSpecies>
 			<species id="E" metaid="meta_E"
-				name="benzaldehyde-lyase" compartment="Cell"
-				initialConcentration="1" substanceUnits="mmole"
+				name="Enzyme" compartment="Cell"
+				initialConcentration="1" substanceUnits="mole"
 				hasOnlySubstanceUnits="true" boundaryCondition="false"
 				constant="false" sboTerm="SBO:0000252">
 				<annotation>
@@ -49,8 +40,8 @@
 				</annotation>
 			</species>
 			<species id="A" metaid="meta_A"
-				name="dimethoxy-benzaldehyde" compartment="Cell"
-				initialConcentration="4" substanceUnits="mmole"
+				name="Substrate" compartment="Cell"
+				initialConcentration="4" substanceUnits="mole"
 				hasOnlySubstanceUnits="true" boundaryCondition="false"
 				constant="false" sboTerm="SBO:0000247" />
 			<annotation>
@@ -69,8 +60,8 @@
 				</rdf:RDF>
 			</annotation>
 			<species id="B" metaid="meta_B"
-				name="benzaldehyde" compartment="Cell" initialConcentration="0"
-				substanceUnits="mmole" hasOnlySubstanceUnits="true"
+				name="Product" compartment="Cell" initialConcentration="0"
+				substanceUnits="mole" hasOnlySubstanceUnits="true"
 				boundaryCondition="false" constant="false" sboTerm="SBO:0000247">
 				<annotation>
 					<rdf:RDF
@@ -122,7 +113,7 @@
 						</apply>
 					</math>
 					<listOfLocalParameters>
-						<localParameter id="KMA" units="mmole" value="100"
+						<localParameter id="KMA" units="mole" value="100"
 							sboTerm="SBO:0000322" />
 						<localParameter id="kcat" units="s_1" value="100"
 							sboTerm="SBO:0000025" />
