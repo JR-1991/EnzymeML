@@ -13,12 +13,13 @@ import sys
 
 import h5py
 
+import numpy as np
 import pandas as pd
 
 
 def convert(in_filename, out_filename='out.hdf5'):
     '''Convert Pandas to hdf5.'''
-    df = pd.read_csv(in_filename, sep='\t')
+    df = pd.read_csv(in_filename, sep='\t', dtype=np.float64)
     df.name = 'timeseries'
 
     # Remove hashtag:
