@@ -43,7 +43,7 @@ class StrendaHandler(xml.sax.ContentHandler):
             self.__species.setId(_get_id(attrs['uniprotKbAC']))
 
             _add_annotation(self.__species,
-                            'http://identifiers.org/uniprot/' +
+                            'http://identifiers.org/uniprot/' + 
                             attrs['uniprotKbAC'])
 
             self.__parent = name
@@ -84,15 +84,15 @@ class StrendaHandler(xml.sax.ContentHandler):
                 self.__species.setName(content)
             elif self.__element_name == 'cid':
                 _add_annotation(self.__species,
-                                'http://identifiers.org/pubchem.compound/' +
+                                'http://identifiers.org/pubchem.compound/' + 
                                 content)
             elif self.__element_name == 'chebiId':
                 _add_annotation(self.__species,
-                                'http://identifiers.org/chebi/CHEBI:' +
+                                'http://identifiers.org/chebi/CHEBI:' + 
                                 content)
             elif self.__element_name == 'inchi':
                 _add_annotation(self.__species,
-                                'http://identifiers.org/inchi/' +
+                                'http://identifiers.org/inchi/' + 
                                 content)
             elif self.__element_name == 'stoichiometry':
                 self.__spec_ref.setStoichiometry(float(content))
