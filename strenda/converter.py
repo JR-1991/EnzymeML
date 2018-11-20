@@ -1,5 +1,5 @@
 '''
-synbiochem (c) University of Manchester 2017
+synbiochem (c) University of Manchester 2018
 
 synbiochem is licensed under the MIT License.
 
@@ -43,7 +43,7 @@ class StrendaHandler(xml.sax.ContentHandler):
             self.__species.setId(_get_id(attrs['uniprotKbAC']))
 
             _add_annotation(self.__species,
-                            'http://identifiers.org/uniprot/' + 
+                            'http://identifiers.org/uniprot/' +
                             attrs['uniprotKbAC'])
 
             self.__parent = name
@@ -67,10 +67,18 @@ class StrendaHandler(xml.sax.ContentHandler):
 
             self.__parent = name
 
+        elif name == 'macromolecule':
+            species_id = _get_id(attrs['refId'])
+
+            self.__species = self.__model.createSpecies()
+            self.__species.setId(species_id)
+
+            self.__parent = name
+
         elif name == 'value':
             if attrs['type'] == 'Concentration':
                 self.__species.setInitialConcentration(float(attrs['value']))
-                # attrs['unit']
+                self.__species.setUnits(attrs['unit'])
 
     def endElement(self, _):
         self.__start = False
@@ -84,15 +92,15 @@ class StrendaHandler(xml.sax.ContentHandler):
                 self.__species.setName(content)
             elif self.__element_name == 'cid':
                 _add_annotation(self.__species,
-                                'http://identifiers.org/pubchem.compound/' + 
+                                'http://identifiers.org/pubchem.compound/' +
                                 content)
             elif self.__element_name == 'chebiId':
                 _add_annotation(self.__species,
-                                'http://identifiers.org/chebi/CHEBI:' + 
+                                'http://identifiers.org/chebi/CHEBI:' +
                                 content)
             elif self.__element_name == 'inchi':
                 _add_annotation(self.__species,
-                                'http://identifiers.org/inchi/' + 
+                                'http://identifiers.org/inchi/' +
                                 content)
             elif self.__element_name == 'stoichiometry':
                 self.__spec_ref.setStoichiometry(float(content))
@@ -111,11 +119,15 @@ def _get_id(id_in):
     return re.sub(r'\W+', '_', str(id_in))
 
 
-def _add_annotation(obj, resource):
+def _add_annotation(obj, resource, qualifier_type=BIOLOGICAL_QUALIFIER,
+                    qualifier_sub_type=BQB_IS):
     '''Add an annotation.'''
     cv_term = CVTerm()
-    cv_term.setQualifierType(BIOLOGICAL_QUALIFIER)
-    cv_term.setBiologicalQualifierType(BQB_IS)
+    cv_term.setQualifierType(qualifier_type)
+
+    if qualifier_type is BIOLOGICAL_QUALIFIER:
+        cv_term.setBiologicalQualifierType(qualifier_sub_type)
+
     cv_term.addResource(resource)
 
     obj.setMetaId('_meta' + obj.getId())
