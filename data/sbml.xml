@@ -10,14 +10,12 @@
 			</unitDefinition>
 		</listOfUnitDefinitions>
 		<listOfCompartments>
-			<compartment id="Cell" name="Cell"
-				size="1" units="litre" spatialDimensions="3"
-				constant="true" />
+			<compartment id="Cell" name="Cell" size="1" units="litre"
+				spatialDimensions="3" constant="true" />
 		</listOfCompartments>
 		<listOfSpecies>
-			<species id="E" metaid="meta_E"
-				name="Enzyme" compartment="Cell"
-				initialConcentration="1" substanceUnits="mole"
+			<species id="E" metaid="meta_E" name="Enzyme"
+				compartment="Cell" initialConcentration="1" substanceUnits="mole"
 				hasOnlySubstanceUnits="true" boundaryCondition="false"
 				constant="false" sboTerm="SBO:0000252">
 				<annotation>
@@ -30,6 +28,8 @@
 								<rdf:Bag>
 									<rdf:li
 										rdf:resource="http://identifiers.org/uniprot/P51853" />
+									<rdf:li
+										rdf:resource="http://identifiers.org/ec-code/4.1.2.38" />
 								</rdf:Bag>
 							</bqbiol:isVersionOf>
 						</rdf:Description>
@@ -39,9 +39,8 @@
 					</sequence>
 				</annotation>
 			</species>
-			<species id="A" metaid="meta_A"
-				name="Substrate" compartment="Cell"
-				initialConcentration="4" substanceUnits="mole"
+			<species id="A" metaid="meta_A" name="Substrate"
+				compartment="Cell" initialConcentration="4" substanceUnits="mole"
 				hasOnlySubstanceUnits="true" boundaryCondition="false"
 				constant="false" sboTerm="SBO:0000247" />
 			<annotation>
@@ -59,10 +58,10 @@
 					</rdf:Description>
 				</rdf:RDF>
 			</annotation>
-			<species id="B" metaid="meta_B"
-				name="Product" compartment="Cell" initialConcentration="0"
-				substanceUnits="mole" hasOnlySubstanceUnits="true"
-				boundaryCondition="false" constant="false" sboTerm="SBO:0000247">
+			<species id="B" metaid="meta_B" name="Product"
+				compartment="Cell" initialConcentration="0" substanceUnits="mole"
+				hasOnlySubstanceUnits="true" boundaryCondition="false"
+				constant="false" sboTerm="SBO:0000247">
 				<annotation>
 					<rdf:RDF
 						xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
@@ -93,9 +92,128 @@
 				</listOfProducts>
 				<listOfModifiers>
 					<modifierSpeciesReference species="E"
-						sboTerm="SBO:0000019"/>
+						sboTerm="SBO:0000019" />
 				</listOfModifiers>
 				<kineticLaw>
+					<annotation>
+						<enzymeml:enzymeml
+							xmlns:enzymeml="http://enzymlml.org">
+							<enzymeml:experimentalConditions>
+								<enzymeml:value name="temperature" units="kelvin"
+									startValue="303.16" sboTerm="SBO:0000147" />
+								<enzymeml:value name="pH" units="dimensionless"
+									startValue="7.4" sboTerm="SBO:0000304" />
+								<enzymeml:buffer name="buffer">
+									<species id="tris" metaid="meta_tris" name="tris"
+										compartment="Cell" initialConcentration="50e-3"
+										substanceUnits="mole" hasOnlySubstanceUnits="true"
+										boundaryCondition="false" constant="true"
+										sboTerm="SBO:0000247">
+										<annotation>
+											<rdf:RDF
+												xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+												xmlns:bqmodel="http://biomodels.net/model-qualifiers/"
+												xmlns:bqbiol="http://biomodels.net/biology-qualifiers/">
+												<rdf:Description rdf:about="#meta_tris">
+													<bqbiol:is>
+														<rdf:Bag>
+															<rdf:li
+																rdf:resource="http://identifiers.org/chebi/CHEBI:9754" />
+														</rdf:Bag>
+													</bqbiol:is>
+												</rdf:Description>
+											</rdf:RDF>
+										</annotation>
+									</species>
+									<species id="nadp" metaid="meta_nadp" name="NADP"
+										compartment="Cell" initialConcentration="0.75e-3"
+										substanceUnits="mole" hasOnlySubstanceUnits="true"
+										boundaryCondition="false" constant="true"
+										sboTerm="SBO:0000247">
+										<annotation>
+											<rdf:RDF
+												xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+												xmlns:bqmodel="http://biomodels.net/model-qualifiers/"
+												xmlns:bqbiol="http://biomodels.net/biology-qualifiers/">
+												<rdf:Description rdf:about="#meta_nadp">
+													<bqbiol:is>
+														<rdf:Bag>
+															<rdf:li
+																rdf:resource="http://identifiers.org/chebi/CHEBI:58349" />
+														</rdf:Bag>
+													</bqbiol:is>
+												</rdf:Description>
+											</rdf:RDF>
+										</annotation>
+									</species>
+									<species id="mgcl2" metaid="meta_mgcl2" name="MgCl2"
+										compartment="Cell" initialConcentration="8e-3"
+										substanceUnits="mole" hasOnlySubstanceUnits="true"
+										boundaryCondition="false" constant="true"
+										sboTerm="SBO:0000247">
+										<annotation>
+											<rdf:RDF
+												xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+												xmlns:bqmodel="http://biomodels.net/model-qualifiers/"
+												xmlns:bqbiol="http://biomodels.net/biology-qualifiers/">
+												<rdf:Description rdf:about="#meta_mgcl2">
+													<bqbiol:is>
+														<rdf:Bag>
+															<rdf:li
+																rdf:resource="http://identifiers.org/chebi/CHEBI:6636" />
+														</rdf:Bag>
+													</bqbiol:is>
+												</rdf:Description>
+											</rdf:RDF>
+										</annotation>
+									</species>
+									<species id="mgcl2" metaid="meta_mgcl2" name="MgCl2"
+										compartment="Cell" initialConcentration="8e-3"
+										substanceUnits="mole" hasOnlySubstanceUnits="true"
+										boundaryCondition="false" constant="true"
+										sboTerm="SBO:0000247">
+										<annotation>
+											<rdf:RDF
+												xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+												xmlns:bqmodel="http://biomodels.net/model-qualifiers/"
+												xmlns:bqbiol="http://biomodels.net/biology-qualifiers/">
+												<rdf:Description rdf:about="#meta_mgcl2">
+													<bqbiol:is>
+														<rdf:Bag>
+															<rdf:li
+																rdf:resource="http://identifiers.org/chebi/CHEBI:6636" />
+														</rdf:Bag>
+													</bqbiol:is>
+												</rdf:Description>
+											</rdf:RDF>
+										</annotation>
+									</species>
+									<species id="g6p_dehyd" metaid="meta_g6p_dehyd" name="Glucose
+									6-phosphate dehydrogenase"
+										compartment="Cell" initialConcentration="0.5"
+										substanceUnits="units_per_ml" hasOnlySubstanceUnits="true"
+										boundaryCondition="false" constant="true"
+										sboTerm="SBO:0000247">
+										<annotation>
+											<rdf:RDF
+												xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+												xmlns:bqmodel="http://biomodels.net/model-qualifiers/"
+												xmlns:bqbiol="http://biomodels.net/biology-qualifiers/">
+												<rdf:Description rdf:about="#meta_g6p_dehyd">
+													<bqbiol:isVersionOf>
+														<rdf:Bag>
+															<rdf:li
+																rdf:resource="http://identifiers.org/ec-code/1.1.1.49" />
+														</rdf:Bag>
+													</bqbiol:isVersionOf>
+												</rdf:Description>
+											</rdf:RDF>
+										</annotation>
+									</species>
+								</enzymeml:buffer>
+							</enzymeml:experimentalConditions>
+						</enzymeml:enzymeml>
+					</annotation>
 					<math xmlns="http://www.w3.org/1998/Math/MathML">
 						<apply>
 							<divide />
