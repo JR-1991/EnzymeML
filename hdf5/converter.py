@@ -32,7 +32,8 @@ def convert(in_filename, out_filename='out.hdf5'):
     df.dropna(axis=1, how='all', inplace=True)
 
     # Write to hdf5:
-    df.to_hdf(out_filename, key=df.name, mode='w')
+    df.to_hdf(out_filename, key=df.name, format='table', data_columns=True,
+              mode='w')
 
     return out_filename
 
