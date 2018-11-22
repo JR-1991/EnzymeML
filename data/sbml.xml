@@ -81,7 +81,7 @@
 		</listOfSpecies>
 		<listOfReactions>
 			<reaction id="Michaelis_Menten_Kinetic" reversible="false"
-				sboTerm="SBO:0000231">
+				sboTerm="SBO:0000176">
 				<listOfReactants>
 					<speciesReference species="A"
 						sboTerm="SBO:0000010" constant="false" stoichiometry="1" />
