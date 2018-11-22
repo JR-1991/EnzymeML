@@ -7,6 +7,7 @@ To view a copy of this license, visit <http://opensource.org/licenses/MIT/>.
 
 @author:  neilswainston
 '''
+# pylint: disable=too-many-branches
 # pylint: disable=too-many-instance-attributes
 import re
 import sys
@@ -14,7 +15,7 @@ import uuid
 import xml.sax
 
 from libsbml import BIOLOGICAL_QUALIFIER, BQB_IS, CVTerm, SBMLDocument, \
-    writeSBMLToFile, writeSBMLToString
+    UNIT_KIND_SECOND, writeSBMLToFile, writeSBMLToString
 
 
 class StrendaHandler(xml.sax.ContentHandler):
@@ -30,6 +31,7 @@ class StrendaHandler(xml.sax.ContentHandler):
         self.__species = None
         self.__reaction = None
         self.__spec_ref = None
+        self.__kinetic_law = None
         self.__parent = None
 
     def startElement(self, name, attrs):
@@ -38,6 +40,10 @@ class StrendaHandler(xml.sax.ContentHandler):
 
         if name == 'experiment':
             self.__document.setId(attrs['strendaId'])
+
+        elif name == 'assayConditions':
+            self.__parent = name
+
         elif name == 'protein':
             self.__species = self.__model.createSpecies()
             self.__species.setId(_get_id(attrs['uniprotKbAC']))
@@ -46,17 +52,19 @@ class StrendaHandler(xml.sax.ContentHandler):
                             'http://identifiers.org/uniprot/' +
                             attrs['uniprotKbAC'])
 
-            self.__parent = name
         elif name == 'dataset':
             self.__reaction = self.__model.createReaction()
             self.__reaction.setId(_get_id(uuid.uuid4()))
             self.__reaction.setName(attrs['name'])
+            self.__reaction.setSBOTerm('SBO:0000176')
+            self.__kinetic_law = self.__reaction.createKineticLaw()
 
         elif name == 'smallCompound':
             species_id = _get_id(attrs['refId'])
 
             self.__species = self.__model.createSpecies()
             self.__species.setId(species_id)
+            self.__species.setSBOTerm('SBO:0000247')
 
             if attrs['role'] == 'Substrate':
                 self.__spec_ref = self.__reaction.createReactant()
@@ -73,12 +81,22 @@ class StrendaHandler(xml.sax.ContentHandler):
             self.__species = self.__model.createSpecies()
             self.__species.setId(species_id)
 
+            if attrs['moleculeClass'] == 'Protein':
+                self.__species.setSBOTerm('SBO:0000252')
+
+            self.__parent = name
+
+        elif name == 'kineticParameter':
             self.__parent = name
 
         elif name == 'value':
             if attrs['type'] == 'Concentration':
-                self.__species.setInitialConcentration(float(attrs['value']))
-                self.__species.setUnits(attrs['unit'])
+                conc, units = self.__get_value_units(float(attrs['value']),
+                                                     attrs['unit'])
+                self.__species.setInitialConcentration(conc)
+                self.__species.setUnits(units)
+            elif self.__parent == 'kineticParameter':
+                self.__add_parameter(attrs)
 
     def endElement(self, _):
         self.__start = False
@@ -112,6 +130,46 @@ class StrendaHandler(xml.sax.ContentHandler):
     def write_sbml_to_string(self):
         '''Write SBML to string.'''
         return writeSBMLToString(self.__document)
+
+    def __add_parameter(self, attrs):
+        '''Add parameter.'''
+        value, units = self.__get_value_units(float(attrs['value']),
+                                              attrs['unit'])
+        parameter = self.__kinetic_law.createLocalParameter()
+        parameter.setValue(float(value))
+        parameter.setUnits(units)
+        parameter.setId(attrs['name'])
+        parameter.setName(attrs['name'])
+
+    def __get_value_units(self, value, units):
+        '''Get value and units.'''
+        if units == 'mM':
+            return value / 10 ** 3, 'mole'
+
+        if units == 'microM':
+            return value / 10 ** 6, 'mole'
+
+        if units == 'nM':
+            return value / 10 ** 9, 'mole'
+
+        if units == 's-1':
+            unit_def_id = 's_1'
+
+            if not self.__model.getUnitDefinition(unit_def_id):
+                unit_def = self.__model.createUnitDefinition()
+                unit_def.setId(unit_def_id)
+                unit_def.setName(unit_def.getName())
+                unit = unit_def.createUnit()
+                unit.setExponent(-1)
+                unit.setKind(UNIT_KIND_SECOND)
+
+            return value, unit_def_id
+
+        if units == 'M-1S-1':
+            return value / 10 ** 9, 'mole'
+
+        print(units)
+        return value, units
 
 
 def _get_id(id_in):
