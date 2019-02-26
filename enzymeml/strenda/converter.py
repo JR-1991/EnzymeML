@@ -9,7 +9,6 @@ To view a copy of this license, visit <http://opensource.org/licenses/MIT/>.
 '''
 # pylint: disable=too-many-instance-attributes
 import sys
-import uuid
 import xml.sax
 
 from libsbml import UNIT_KIND_MOLE, UNIT_KIND_SECOND, \
@@ -99,27 +98,26 @@ class StrendaHandler(xml.sax.ContentHandler):
         '''Add small compound.'''
         species_id = utils.get_id(attrs['refId'])
 
-        self.__species = self.__model.createSpecies()
-        self.__species.setId(species_id)
-        self.__species.setSBOTerm('SBO:0000247')
-        self.__species.setCompartment(self.__compartment.getId())
-        self.__species.setHasOnlySubstanceUnits(True)
-
         if attrs['role'] == 'Substrate':
-            self.__spec_ref = self.__reaction.createReactant()
-            self.__spec_ref.setSpecies(species_id)
-            self.__spec_ref.setConstant(False)
-            self.__species.setConstant(False)
-            self.__species.setBoundaryCondition(False)
+            self.__species, self.__spec_ref = \
+                utils.add_substrate(self.__model, self.__reaction,
+                                    species_id,
+                                    self.__compartment.getId(),
+                                    name)
         elif attrs['role'] == 'Product':
-            self.__spec_ref = self.__reaction.createProduct()
-            self.__spec_ref.setSpecies(species_id)
-            self.__spec_ref.setConstant(False)
-            self.__species.setConstant(False)
-            self.__species.setBoundaryCondition(False)
+            self.__species, self.__spec_ref = \
+                utils.add_product(self.__model, self.__reaction,
+                                  species_id,
+                                  self.__compartment.getId(),
+                                  name)
         else:
+            self.__species = self.__model.createSpecies()
+            self.__species.setId(species_id)
+            self.__species.setCompartment(self.__compartment.getId())
             self.__species.setConstant(True)
             self.__species.setBoundaryCondition(True)
+            self.__species.setHasOnlySubstanceUnits(True)
+            self.__species.setSBOTerm('SBO:0000247')
 
         self.__parent = name
 

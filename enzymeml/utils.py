@@ -33,6 +33,29 @@ def get_document():
     return document, model, compartment
 
 
+def add_reaction(model, name, reversible=True):
+    '''Add reaction.'''
+    reaction = model.createReaction()
+    reaction.setId(get_id(uuid.uuid4()))
+    reaction.setName(name)
+    reaction.setSBOTerm('SBO:0000176')
+    reaction.setReversible(reversible)
+    reaction.setFast(False)
+    return reaction
+
+
+def add_substrate(model, reaction, species_id, comp_id, name=None):
+    '''Add substrate.'''
+    return _add_reaction_participant(model, reaction, species_id, name,
+                                     comp_id, True)
+
+
+def add_product(model, reaction, species_id, comp_id, name):
+    '''Add product.'''
+    return _add_reaction_participant(model, reaction, species_id, name,
+                                     comp_id, False)
+
+
 def add_enzyme(model, enz_id, comp_id, name=None, uniprot_id=None):
     '''Add enzyme.'''
     species = model.createSpecies()
@@ -50,17 +73,6 @@ def add_enzyme(model, enz_id, comp_id, name=None, uniprot_id=None):
         add_annotation(species, 'http://identifiers.org/uniprot/' + uniprot_id)
 
     return species
-
-
-def add_reaction(model, name, reversible=True):
-    '''Add reaction.'''
-    reaction = model.createReaction()
-    reaction.setId(get_id(uuid.uuid4()))
-    reaction.setName(name)
-    reaction.setSBOTerm('SBO:0000176')
-    reaction.setReversible(reversible)
-    reaction.setFast(False)
-    return reaction
 
 
 def add_parameter(kinetic_law, value, units, name, sbo_term=0):
@@ -93,3 +105,26 @@ def add_annotation(obj, resource, qualifier_type=BIOLOGICAL_QUALIFIER,
 
     obj.setMetaId('_meta' + obj.getId())
     obj.addCVTerm(cv_term)
+
+
+def _add_reaction_participant(model, reaction, species_id, name, comp_id,
+                              is_substrate):
+    '''Add reaction participant.'''
+    species = model.createSpecies()
+    species.setId(species_id)
+    species.setSBOTerm('SBO:0000247')
+    species.setCompartment(comp_id)
+    species.setHasOnlySubstanceUnits(True)
+    species.setConstant(False)
+    species.setBoundaryCondition(False)
+
+    if name:
+        species.setName(name)
+
+    spec_ref = reaction.createReactant() if is_substrate \
+        else reaction.createProduct()
+
+    spec_ref.setSpecies(species_id)
+    spec_ref.setConstant(False)
+
+    return species, spec_ref
