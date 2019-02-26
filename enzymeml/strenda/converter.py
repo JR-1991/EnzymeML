@@ -8,13 +8,14 @@ To view a copy of this license, visit <http://opensource.org/licenses/MIT/>.
 @author:  neilswainston
 '''
 # pylint: disable=too-many-instance-attributes
-import re
 import sys
 import uuid
 import xml.sax
 
-from libsbml import BIOLOGICAL_QUALIFIER, BQB_IS, CVTerm, SBMLDocument, \
-    UNIT_KIND_MOLE, UNIT_KIND_SECOND, writeSBMLToFile, writeSBMLToString
+from libsbml import UNIT_KIND_MOLE, UNIT_KIND_SECOND, \
+    writeSBMLToFile, writeSBMLToString
+
+from enzymeml import utils
 
 
 class StrendaHandler(xml.sax.ContentHandler):
@@ -23,18 +24,8 @@ class StrendaHandler(xml.sax.ContentHandler):
     def __init__(self):
         xml.sax.ContentHandler.__init__(self)
 
-        self.__document = SBMLDocument()
-
-        self.__model = self.__document.createModel()
-        self.__model.setExtentUnits('mole')
-        self.__model.setTimeUnits('second')
-
-        self.__compartment = self.__model.createCompartment()
-        self.__compartment.setId('c')
-        self.__compartment.setConstant(True)
-        self.__compartment.setSize(1)
-        self.__compartment.setSpatialDimensions(3)
-        self.__compartment.setUnits('litre')
+        self.__document, self.__model, self.__compartment = \
+            utils.get_document()
 
         self.__start = False
         self.__element_name = None
@@ -83,17 +74,16 @@ class StrendaHandler(xml.sax.ContentHandler):
             if self.__element_name == 'name' and self.__species:
                 self.__species.setName(content)
             elif self.__element_name == 'cid':
-                _add_annotation(self.__species,
-                                'http://identifiers.org/pubchem.compound/' +
-                                content)
+                utils.add_annotation(
+                    self.__species,
+                    'http://identifiers.org/pubchem.compound/' + content)
             elif self.__element_name == 'chebiId':
-                _add_annotation(self.__species,
-                                'http://identifiers.org/chebi/CHEBI:' +
-                                content)
+                utils.add_annotation(self.__species,
+                                     'http://identifiers.org/chebi/CHEBI:' +
+                                     content)
             elif self.__element_name == 'inchi':
-                _add_annotation(self.__species,
-                                'http://identifiers.org/inchi/' +
-                                content)
+                utils.add_annotation(self.__species,
+                                     'http://identifiers.org/inchi/' + content)
             elif self.__element_name == 'stoichiometry':
                 self.__spec_ref.setStoichiometry(float(content))
 
@@ -107,7 +97,7 @@ class StrendaHandler(xml.sax.ContentHandler):
 
     def __add_small_compound(self, name, attrs):
         '''Add small compound.'''
-        species_id = _get_id(attrs['refId'])
+        species_id = utils.get_id(attrs['refId'])
 
         self.__species = self.__model.createSpecies()
         self.__species.setId(species_id)
@@ -136,20 +126,20 @@ class StrendaHandler(xml.sax.ContentHandler):
     def __add_protein(self, attrs):
         '''Add protein.'''
         self.__species = self.__model.createSpecies()
-        self.__species.setId(_get_id(attrs['uniprotKbAC']))
+        self.__species.setId(utils.get_id(attrs['uniprotKbAC']))
         self.__species.setSBOTerm('SBO:0000252')
         self.__species.setCompartment(self.__compartment.getId())
         self.__species.setHasOnlySubstanceUnits(True)
         self.__species.setConstant(True)
         self.__species.setBoundaryCondition(False)
 
-        _add_annotation(self.__species,
+        utils.add_annotation(self.__species,
                         'http://identifiers.org/uniprot/' +
                         attrs['uniprotKbAC'])
 
     def __add_macromolecule(self, name, attrs):
         '''Add macromolecule.'''
-        species_id = _get_id(attrs['refId'])
+        species_id = utils.get_id(attrs['refId'])
 
         self.__species = self.__model.createSpecies()
         self.__species.setId(species_id)
@@ -166,7 +156,7 @@ class StrendaHandler(xml.sax.ContentHandler):
     def __add_reaction(self, attrs):
         '''Add reaction.'''
         self.__reaction = self.__model.createReaction()
-        self.__reaction.setId(_get_id(uuid.uuid4()))
+        self.__reaction.setId(utils.get_id(uuid.uuid4()))
         self.__reaction.setName(attrs['name'])
         self.__reaction.setSBOTerm('SBO:0000176')
         self.__reaction.setReversible(False)
@@ -201,7 +191,7 @@ class StrendaHandler(xml.sax.ContentHandler):
         parameter = self.__kinetic_law.createLocalParameter()
         parameter.setValue(float(value))
         parameter.setUnits(units)
-        parameter.setId(_get_id(uuid.uuid4()))
+        parameter.setId(utils.get_id(uuid.uuid4()))
         parameter.setName(attrs['name'])
 
         if attrs['name'] == 'kcat':
@@ -263,26 +253,6 @@ class StrendaHandler(xml.sax.ContentHandler):
             units = unit_def_id
 
         return value, units
-
-
-def _get_id(id_in):
-    '''Format id.'''
-    return '_' + re.sub(r'\W+', '_', str(id_in))
-
-
-def _add_annotation(obj, resource, qualifier_type=BIOLOGICAL_QUALIFIER,
-                    qualifier_sub_type=BQB_IS):
-    '''Add an annotation.'''
-    cv_term = CVTerm()
-    cv_term.setQualifierType(qualifier_type)
-
-    if qualifier_type is BIOLOGICAL_QUALIFIER:
-        cv_term.setBiologicalQualifierType(qualifier_sub_type)
-
-    cv_term.addResource(resource)
-
-    obj.setMetaId('_meta' + obj.getId())
-    obj.addCVTerm(cv_term)
 
 
 def convert(in_filename, out_filename='strenda_sbml.xml'):
