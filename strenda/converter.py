@@ -15,9 +15,10 @@ import uuid
 import xml.sax
 
 from libsbml import BIOLOGICAL_QUALIFIER, BQB_IS, CVTerm, SBMLDocument, \
-    UNIT_KIND_DIMENSIONLESS, UNIT_KIND_LITRE, UNIT_KIND_MOLE, UNIT_KIND_SECOND, \
+    UNIT_KIND_ITEM, UNIT_KIND_LITRE, UNIT_KIND_MOLE, UNIT_KIND_SECOND, \
     writeSBMLToFile, writeSBMLToString
     
+
 
 
 class StrendaHandler(xml.sax.ContentHandler):
@@ -196,6 +197,9 @@ class StrendaHandler(xml.sax.ContentHandler):
 
         if units == 'nM':
             return value / 10 ** 9, 'mole'
+        
+        if units == 'units-ml1':
+            return value * 10 **3, 'item'
 
         if units == 's-1':
             unit_def_id = 's_1'
@@ -231,26 +235,7 @@ class StrendaHandler(xml.sax.ContentHandler):
                 unit.setKind(UNIT_KIND_SECOND)
 
             return value, unit_def_id
-        
-            if units == 'units-ml1':
-                unit_def_id = 'units_ml1'
-    
-                if not self.__model.getUnitDefinition(unit_def_id):
-                    unit_def = self.__model.createUnitDefinition()
-                    unit_def.setId(unit_def_id)
-                    unit_def.setName(unit_def.getName())
-                    unit = unit_def.createUnit()
-                    unit.setScale(1)
-                    unit.setMultiplier(1)
-                    unit.setExponent(-1)
-                    unit.setKind(UNIT_KIND_DIMENSIONLESS)
-                    unit = unit_def.createUnit()
-                    unit.setScale(-3)
-                    unit.setMultiplier(1)
-                    unit.setExponent(-1)
-                    unit.setKind(UNIT_KIND_LITRE)
 
-            return value, unit_def_id
         return value, units
 
 
