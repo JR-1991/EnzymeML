@@ -125,17 +125,10 @@ class StrendaHandler(xml.sax.ContentHandler):
 
     def __add_protein(self, attrs):
         '''Add protein.'''
-        self.__species = self.__model.createSpecies()
-        self.__species.setId(utils.get_id(attrs['uniprotKbAC']))
-        self.__species.setSBOTerm('SBO:0000252')
-        self.__species.setCompartment(self.__compartment.getId())
-        self.__species.setHasOnlySubstanceUnits(True)
-        self.__species.setConstant(True)
-        self.__species.setBoundaryCondition(False)
-
-        utils.add_annotation(self.__species,
-                        'http://identifiers.org/uniprot/' +
-                        attrs['uniprotKbAC'])
+        self.__species = utils.add_enzyme(self.__model,
+                                          utils.get_id(attrs['uniprotKbAC']),
+                                          self.__compartment.getId(),
+                                          uniprot_id=attrs['uniprotKbAC'])
 
     def __add_macromolecule(self, name, attrs):
         '''Add macromolecule.'''
@@ -155,12 +148,7 @@ class StrendaHandler(xml.sax.ContentHandler):
 
     def __add_reaction(self, attrs):
         '''Add reaction.'''
-        self.__reaction = self.__model.createReaction()
-        self.__reaction.setId(utils.get_id(uuid.uuid4()))
-        self.__reaction.setName(attrs['name'])
-        self.__reaction.setSBOTerm('SBO:0000176')
-        self.__reaction.setReversible(False)
-        self.__reaction.setFast(False)
+        self.__reaction = utils.add_reaction(self.__model, attrs['name'])
         self.__kinetic_law = self.__reaction.createKineticLaw()
 
     def __add_value(self, attrs):
@@ -188,16 +176,16 @@ class StrendaHandler(xml.sax.ContentHandler):
         '''Add parameter.'''
         value, units = self.__get_value_units(float(attrs['value']),
                                               attrs['unit'])
-        parameter = self.__kinetic_law.createLocalParameter()
-        parameter.setValue(float(value))
-        parameter.setUnits(units)
-        parameter.setId(utils.get_id(uuid.uuid4()))
-        parameter.setName(attrs['name'])
 
         if attrs['name'] == 'kcat':
-            parameter.setSBOTerm(25)
+            sbo_term = 25
         elif attrs['name'] == 'km':
-            parameter.setSBOTerm(373)
+            sbo_term = 373
+        else:
+            sbo_term = 0
+
+        utils.add_parameter(self.__kinetic_law, value, units, attrs['name'],
+                            sbo_term)
 
     def __get_value_units(self, value, units):
         '''Get value and units.'''
