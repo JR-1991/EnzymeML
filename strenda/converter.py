@@ -1,7 +1,7 @@
 '''
-synbiochem (c) University of Manchester 2018
+EnzymeML (c) University of Manchester 2018
 
-synbiochem is licensed under the MIT License.
+EnzymeML is licensed under the MIT License.
 
 To view a copy of this license, visit <http://opensource.org/licenses/MIT/>.
 
@@ -15,7 +15,9 @@ import uuid
 import xml.sax
 
 from libsbml import BIOLOGICAL_QUALIFIER, BQB_IS, CVTerm, SBMLDocument, \
-    UNIT_KIND_SECOND, writeSBMLToFile, writeSBMLToString
+    UNIT_KIND_DIMENSIONLESS, UNIT_KIND_LITRE, UNIT_KIND_MOLE, UNIT_KIND_SECOND, \
+    writeSBMLToFile, writeSBMLToString
+    
 
 
 class StrendaHandler(xml.sax.ContentHandler):
@@ -23,8 +25,19 @@ class StrendaHandler(xml.sax.ContentHandler):
 
     def __init__(self):
         xml.sax.ContentHandler.__init__(self)
+        
         self.__document = SBMLDocument()
+        
         self.__model = self.__document.createModel()
+        self.__model.setExtentUnits('mole')
+        self.__model.setTimeUnits('second')
+        
+        self.__compartment = self.__model.createCompartment()
+        self.__compartment.setId('c')
+        self.__compartment.setConstant(True)
+        self.__compartment.setSize(1)
+        self.__compartment.setSpatialDimensions(3)
+        self.__compartment.setUnits('litre')
 
         self.__start = False
         self.__element_name = None
@@ -47,6 +60,11 @@ class StrendaHandler(xml.sax.ContentHandler):
         elif name == 'protein':
             self.__species = self.__model.createSpecies()
             self.__species.setId(_get_id(attrs['uniprotKbAC']))
+            self.__species.setSBOTerm('SBO:0000252')
+            self.__species.setCompartment(self.__compartment.getId())
+            self.__species.setHasOnlySubstanceUnits(True)
+            self.__species.setConstant(True)
+            self.__species.setBoundaryCondition(False)
 
             _add_annotation(self.__species,
                             'http://identifiers.org/uniprot/' +
@@ -57,6 +75,8 @@ class StrendaHandler(xml.sax.ContentHandler):
             self.__reaction.setId(_get_id(uuid.uuid4()))
             self.__reaction.setName(attrs['name'])
             self.__reaction.setSBOTerm('SBO:0000176')
+            self.__reaction.setReversible(False)
+            self.__reaction.setFast(False)
             self.__kinetic_law = self.__reaction.createKineticLaw()
 
         elif name == 'smallCompound':
@@ -65,13 +85,24 @@ class StrendaHandler(xml.sax.ContentHandler):
             self.__species = self.__model.createSpecies()
             self.__species.setId(species_id)
             self.__species.setSBOTerm('SBO:0000247')
+            self.__species.setCompartment(self.__compartment.getId())
+            self.__species.setHasOnlySubstanceUnits(True)
 
             if attrs['role'] == 'Substrate':
                 self.__spec_ref = self.__reaction.createReactant()
                 self.__spec_ref.setSpecies(species_id)
+                self.__spec_ref.setConstant(False)
+                self.__species.setConstant(False)
+                self.__species.setBoundaryCondition(False)
             elif attrs['role'] == 'Product':
                 self.__spec_ref = self.__reaction.createProduct()
                 self.__spec_ref.setSpecies(species_id)
+                self.__spec_ref.setConstant(False)
+                self.__species.setConstant(False)
+                self.__species.setBoundaryCondition(False)
+            else:
+                self.__species.setConstant(True)
+                self.__species.setBoundaryCondition(True)
 
             self.__parent = name
 
@@ -80,6 +111,10 @@ class StrendaHandler(xml.sax.ContentHandler):
 
             self.__species = self.__model.createSpecies()
             self.__species.setId(species_id)
+            self.__species.setCompartment(self.__compartment.getId())
+            self.__species.setConstant(True)
+            self.__species.setBoundaryCondition(True)
+            self.__species.setHasOnlySubstanceUnits(True)
 
             if attrs['moleculeClass'] == 'Protein':
                 self.__species.setSBOTerm('SBO:0000252')
@@ -95,6 +130,14 @@ class StrendaHandler(xml.sax.ContentHandler):
                                                      attrs['unit'])
                 self.__species.setInitialConcentration(conc)
                 self.__species.setUnits(units)
+            elif attrs['type'] == 'ConcentrationRange':
+                start_conc, start_units = self.__get_value_units(float(attrs['startValue']),
+                                                     attrs['unit'])
+                end_conc, end_units = self.__get_value_units(float(attrs['endValue']),
+                                                     attrs['unit'])
+                self.__species.setInitialConcentration(start_conc)
+                self.__species.setUnits(start_units)
+                self.__species.setConstant(False)
             elif self.__parent == 'kineticParameter':
                 self.__add_parameter(attrs)
 
@@ -138,8 +181,10 @@ class StrendaHandler(xml.sax.ContentHandler):
         parameter = self.__kinetic_law.createLocalParameter()
         parameter.setValue(float(value))
         parameter.setUnits(units)
-        parameter.setId(attrs['name'])
+        parameter.setId(_get_id(uuid.uuid4()))
         parameter.setName(attrs['name'])
+        
+        #TODO: Add SBO Terms
 
     def __get_value_units(self, value, units):
         '''Get value and units.'''
@@ -160,21 +205,58 @@ class StrendaHandler(xml.sax.ContentHandler):
                 unit_def.setId(unit_def_id)
                 unit_def.setName(unit_def.getName())
                 unit = unit_def.createUnit()
+                unit.setScale(1)
+                unit.setMultiplier(1)
                 unit.setExponent(-1)
                 unit.setKind(UNIT_KIND_SECOND)
 
             return value, unit_def_id
 
         if units == 'M-1S-1':
-            return value / 10 ** 9, 'mole'
+            unit_def_id = 'M_1S_1'
 
-        print(units)
+            if not self.__model.getUnitDefinition(unit_def_id):
+                unit_def = self.__model.createUnitDefinition()
+                unit_def.setId(unit_def_id)
+                unit_def.setName(unit_def.getName())
+                unit = unit_def.createUnit()
+                unit.setScale(1)
+                unit.setMultiplier(1)
+                unit.setExponent(-1)
+                unit.setKind(UNIT_KIND_MOLE)
+                unit = unit_def.createUnit()
+                unit.setScale(1)
+                unit.setMultiplier(1)
+                unit.setExponent(-1)
+                unit.setKind(UNIT_KIND_SECOND)
+
+            return value, unit_def_id
+        
+            if units == 'units-ml1':
+                unit_def_id = 'units_ml1'
+    
+                if not self.__model.getUnitDefinition(unit_def_id):
+                    unit_def = self.__model.createUnitDefinition()
+                    unit_def.setId(unit_def_id)
+                    unit_def.setName(unit_def.getName())
+                    unit = unit_def.createUnit()
+                    unit.setScale(1)
+                    unit.setMultiplier(1)
+                    unit.setExponent(-1)
+                    unit.setKind(UNIT_KIND_DIMENSIONLESS)
+                    unit = unit_def.createUnit()
+                    unit.setScale(-3)
+                    unit.setMultiplier(1)
+                    unit.setExponent(-1)
+                    unit.setKind(UNIT_KIND_LITRE)
+
+            return value, unit_def_id
         return value, units
 
 
 def _get_id(id_in):
     '''Format id.'''
-    return re.sub(r'\W+', '_', str(id_in))
+    return '_' + re.sub(r'\W+', '_', str(id_in))
 
 
 def _add_annotation(obj, resource, qualifier_type=BIOLOGICAL_QUALIFIER,
