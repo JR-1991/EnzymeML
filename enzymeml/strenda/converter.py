@@ -161,7 +161,7 @@ class StrendaHandler(xml.sax.ContentHandler):
         if attrs['type'] == 'Concentration':
             conc, units = self.__get_value_units(float(attrs['value']),
                                                  attrs['unit'])
-            self.__species.setInitialConcentration(conc)
+            self.__species.setInitialAmount(conc)
             self.__species.setUnits(units)
         elif attrs['type'] == 'ConcentrationRange':
             start_conc, start_units = \
@@ -171,7 +171,7 @@ class StrendaHandler(xml.sax.ContentHandler):
                 self.__get_value_units(float(attrs['endValue']),
                                        attrs['unit'])
 
-            self.__species.setInitialConcentration(start_conc)
+            self.__species.setInitialAmount(start_conc)
             self.__species.setUnits(start_units)
             self.__species.setConstant(False)
         elif self.__parent == 'kineticParameter':
