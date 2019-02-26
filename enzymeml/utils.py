@@ -48,49 +48,38 @@ def add_reaction(model, name, reversible=True):
 def add_substrate(model, reaction, species_id, comp_id,
                   name=None, stoichiometry=1):
     '''Add substrate.'''
-    return _add_reaction_participant(model, reaction, species_id, name,
-                                     comp_id, stoichiometry, True)
+    return _add_substrate_product(model, reaction, species_id, name,
+                                  comp_id, stoichiometry, True)
 
 
 def add_product(model, reaction, species_id, comp_id,
                 name=None, stoichiometry=1):
     '''Add product.'''
-    return _add_reaction_participant(model, reaction, species_id, name,
-                                     comp_id, stoichiometry, False)
+    return _add_substrate_product(model, reaction, species_id, name,
+                                  comp_id, stoichiometry, False)
 
 
-def add_enzyme(model, species_id, comp_id, name=None, uniprot_id=None):
+def add_enzyme(model, reaction, species_id, comp_id,
+               name=None, uniprot_id=None):
     '''Add enzyme.'''
-    species = model.createSpecies()
-    species.setId(species_id)
-    species.setSBOTerm('SBO:0000252')
-    species.setCompartment(comp_id)
-    species.setConstant(True)
-    species.setBoundaryCondition(False)
-    species.setHasOnlySubstanceUnits(True)
-
-    if name:
-        species.setName(name)
+    species = _add_species(model, species_id, name, comp_id, 252,
+                           constant=True, boundary_condition=False)
 
     if uniprot_id:
         add_annotation(species, 'http://identifiers.org/uniprot/' + uniprot_id)
 
+    spec_ref = reaction.createModifier()
+    spec_ref.setSpecies(species_id)
+    spec_ref.setSBOTerm(460)
+
     return species
 
 
-def add_non_participant(model, species_id, comp_id, sbo_term=0):
+def add_non_participant(model, species_id, comp_id,
+                        name=None, sbo_term=0):
     '''Add non-participating species.'''
-    species = model.createSpecies()
-    species.setId(species_id)
-    species.setCompartment(comp_id)
-    species.setConstant(True)
-    species.setBoundaryCondition(True)
-    species.setHasOnlySubstanceUnits(True)
-
-    if sbo_term:
-        species.setSBOTerm(sbo_term)
-
-    return species
+    return _add_species(model, species_id, name, comp_id, sbo_term,
+                        constant=True, boundary_condition=True)
 
 
 def add_parameter(kinetic_law, value, units, name, sbo_term=0):
@@ -103,6 +92,12 @@ def add_parameter(kinetic_law, value, units, name, sbo_term=0):
 
     if sbo_term:
         parameter.setSBOTerm(sbo_term)
+
+
+def set_notes(elem, notes):
+    '''Set notes.'''
+    elem.setNotes('<body xmlns=\'http://www.w3.org/1999/xhtml\'>' +
+                  '<pre>' + notes + '</pre></body>')
 
 
 def get_id(id_in):
@@ -125,19 +120,11 @@ def add_annotation(obj, resource, qualifier_type=BIOLOGICAL_QUALIFIER,
     obj.addCVTerm(cv_term)
 
 
-def _add_reaction_participant(model, reaction, species_id, name, comp_id,
-                              stoichiometry, is_substrate):
+def _add_substrate_product(model, reaction, species_id, name, comp_id,
+                           stoichiometry, is_substrate):
     '''Add reaction participant.'''
-    species = model.createSpecies()
-    species.setId(species_id)
-    species.setSBOTerm('SBO:0000247')
-    species.setCompartment(comp_id)
-    species.setHasOnlySubstanceUnits(True)
-    species.setConstant(False)
-    species.setBoundaryCondition(False)
-
-    if name:
-        species.setName(name)
+    species = _add_species(model, species_id, name, comp_id, 247,
+                           constant=False, boundary_condition=False)
 
     spec_ref = reaction.createReactant() if is_substrate \
         else reaction.createProduct()
@@ -145,5 +132,25 @@ def _add_reaction_participant(model, reaction, species_id, name, comp_id,
     spec_ref.setSpecies(species_id)
     spec_ref.setStoichiometry(stoichiometry)
     spec_ref.setConstant(False)
+    spec_ref.setSBOTerm(10 if is_substrate else 11)
 
     return species, spec_ref
+
+
+def _add_species(model, species_id, name, comp_id, sbo_term,
+                 constant, boundary_condition):
+    '''Add species.'''
+    species = model.createSpecies()
+    species.setId(species_id)
+    species.setCompartment(comp_id)
+    species.setHasOnlySubstanceUnits(True)
+    species.setConstant(constant)
+    species.setBoundaryCondition(boundary_condition)
+
+    if name:
+        species.setName(name)
+
+    if sbo_term:
+        species.setSBOTerm(sbo_term)
+
+    return species

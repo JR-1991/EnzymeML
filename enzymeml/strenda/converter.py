@@ -29,9 +29,11 @@ class StrendaHandler(xml.sax.ContentHandler):
         self.__start = False
         self.__element_name = None
         self.__species = None
+        self.__uniprot_id = None
         self.__reaction = None
         self.__spec_ref = None
         self.__kinetic_law = None
+        self.__reaction_notes = ''
         self.__parent = None
 
     def startElement(self, name, attrs):
@@ -45,10 +47,11 @@ class StrendaHandler(xml.sax.ContentHandler):
             self.__parent = name
 
         elif name == 'protein':
-            self.__add_protein(attrs)
+            self.__uniprot_id = attrs['uniprotKbAC']
 
         elif name == 'dataset':
             self.__add_reaction(attrs)
+            self.__add_protein()
 
         elif name == 'smallCompound':
             self.__add_small_compound(name, attrs)
@@ -62,11 +65,14 @@ class StrendaHandler(xml.sax.ContentHandler):
         elif name == 'value':
             self.__add_value(attrs)
 
-    def endElement(self, _):
+    def endElement(self, name):
         self.__start = False
 
-        # if name == 'dataset':
-        #    self.__reaction = None
+        if name == 'dataset':
+            if self.__reaction_notes:
+                utils.set_notes(self.__reaction, self.__reaction_notes.strip())
+
+            self.__reaction = None
 
     def characters(self, content):
         if self.__start and content.strip() and content != 'null':
@@ -85,6 +91,8 @@ class StrendaHandler(xml.sax.ContentHandler):
                                      'http://identifiers.org/inchi/' + content)
             elif self.__element_name == 'stoichiometry':
                 self.__spec_ref.setStoichiometry(float(content))
+            elif self.__element_name == 'commentOnProteinReaction':
+                self.__reaction_notes = self.__reaction_notes + content + '\n'
 
     def write_sbml_to_file(self, filename):
         '''Write SBML to file.'''
@@ -119,12 +127,16 @@ class StrendaHandler(xml.sax.ContentHandler):
 
         self.__parent = name
 
-    def __add_protein(self, attrs):
+    def __add_protein(self):
         '''Add protein.'''
-        self.__species = utils.add_enzyme(self.__model,
-                                          utils.get_id(attrs['uniprotKbAC']),
-                                          self.__compartment.getId(),
-                                          uniprot_id=attrs['uniprotKbAC'])
+        species_id = utils.get_id(self.__uniprot_id)
+
+        if not self.__model.getSpecies(species_id):
+            self.__species = utils.add_enzyme(self.__model,
+                                              self.__reaction,
+                                              species_id,
+                                              self.__compartment.getId(),
+                                              uniprot_id=self.__uniprot_id)
 
     def __add_macromolecule(self, name, attrs):
         '''Add macromolecule.'''
