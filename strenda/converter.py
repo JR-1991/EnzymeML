@@ -15,8 +15,7 @@ import uuid
 import xml.sax
 
 from libsbml import BIOLOGICAL_QUALIFIER, BQB_IS, CVTerm, SBMLDocument, \
-    UNIT_KIND_ITEM, UNIT_KIND_LITRE, UNIT_KIND_MOLE, UNIT_KIND_SECOND, \
-    writeSBMLToFile, writeSBMLToString
+    UNIT_KIND_MOLE, UNIT_KIND_SECOND, writeSBMLToFile, writeSBMLToString
     
 
 
