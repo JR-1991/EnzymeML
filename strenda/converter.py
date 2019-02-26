@@ -7,7 +7,6 @@ To view a copy of this license, visit <http://opensource.org/licenses/MIT/>.
 
 @author:  neilswainston
 '''
-# pylint: disable=too-many-branches
 # pylint: disable=too-many-instance-attributes
 import re
 import sys
@@ -16,8 +15,6 @@ import xml.sax
 
 from libsbml import BIOLOGICAL_QUALIFIER, BQB_IS, CVTerm, SBMLDocument, \
     UNIT_KIND_MOLE, UNIT_KIND_SECOND, writeSBMLToFile, writeSBMLToString
-    
-
 
 
 class StrendaHandler(xml.sax.ContentHandler):
@@ -25,13 +22,13 @@ class StrendaHandler(xml.sax.ContentHandler):
 
     def __init__(self):
         xml.sax.ContentHandler.__init__(self)
-        
+
         self.__document = SBMLDocument()
-        
+
         self.__model = self.__document.createModel()
         self.__model.setExtentUnits('mole')
         self.__model.setTimeUnits('second')
-        
+
         self.__compartment = self.__model.createCompartment()
         self.__compartment.setId('c')
         self.__compartment.setConstant(True)
@@ -58,88 +55,22 @@ class StrendaHandler(xml.sax.ContentHandler):
             self.__parent = name
 
         elif name == 'protein':
-            self.__species = self.__model.createSpecies()
-            self.__species.setId(_get_id(attrs['uniprotKbAC']))
-            self.__species.setSBOTerm('SBO:0000252')
-            self.__species.setCompartment(self.__compartment.getId())
-            self.__species.setHasOnlySubstanceUnits(True)
-            self.__species.setConstant(True)
-            self.__species.setBoundaryCondition(False)
-
-            _add_annotation(self.__species,
-                            'http://identifiers.org/uniprot/' +
-                            attrs['uniprotKbAC'])
+            self.__add_protein(attrs)
 
         elif name == 'dataset':
-            self.__reaction = self.__model.createReaction()
-            self.__reaction.setId(_get_id(uuid.uuid4()))
-            self.__reaction.setName(attrs['name'])
-            self.__reaction.setSBOTerm('SBO:0000176')
-            self.__reaction.setReversible(False)
-            self.__reaction.setFast(False)
-            self.__kinetic_law = self.__reaction.createKineticLaw()
+            self.__add_reaction(attrs)
 
         elif name == 'smallCompound':
-            species_id = _get_id(attrs['refId'])
-
-            self.__species = self.__model.createSpecies()
-            self.__species.setId(species_id)
-            self.__species.setSBOTerm('SBO:0000247')
-            self.__species.setCompartment(self.__compartment.getId())
-            self.__species.setHasOnlySubstanceUnits(True)
-
-            if attrs['role'] == 'Substrate':
-                self.__spec_ref = self.__reaction.createReactant()
-                self.__spec_ref.setSpecies(species_id)
-                self.__spec_ref.setConstant(False)
-                self.__species.setConstant(False)
-                self.__species.setBoundaryCondition(False)
-            elif attrs['role'] == 'Product':
-                self.__spec_ref = self.__reaction.createProduct()
-                self.__spec_ref.setSpecies(species_id)
-                self.__spec_ref.setConstant(False)
-                self.__species.setConstant(False)
-                self.__species.setBoundaryCondition(False)
-            else:
-                self.__species.setConstant(True)
-                self.__species.setBoundaryCondition(True)
-
-            self.__parent = name
+            self.__add_small_compound(name, attrs)
 
         elif name == 'macromolecule':
-            species_id = _get_id(attrs['refId'])
-
-            self.__species = self.__model.createSpecies()
-            self.__species.setId(species_id)
-            self.__species.setCompartment(self.__compartment.getId())
-            self.__species.setConstant(True)
-            self.__species.setBoundaryCondition(True)
-            self.__species.setHasOnlySubstanceUnits(True)
-
-            if attrs['moleculeClass'] == 'Protein':
-                self.__species.setSBOTerm('SBO:0000252')
-
-            self.__parent = name
+            self.__add_macromolecule(name, attrs)
 
         elif name == 'kineticParameter':
             self.__parent = name
 
         elif name == 'value':
-            if attrs['type'] == 'Concentration':
-                conc, units = self.__get_value_units(float(attrs['value']),
-                                                     attrs['unit'])
-                self.__species.setInitialConcentration(conc)
-                self.__species.setUnits(units)
-            elif attrs['type'] == 'ConcentrationRange':
-                start_conc, start_units = self.__get_value_units(float(attrs['startValue']),
-                                                     attrs['unit'])
-                end_conc, end_units = self.__get_value_units(float(attrs['endValue']),
-                                                     attrs['unit'])
-                self.__species.setInitialConcentration(start_conc)
-                self.__species.setUnits(start_units)
-                self.__species.setConstant(False)
-            elif self.__parent == 'kineticParameter':
-                self.__add_parameter(attrs)
+            self.__add_value(attrs)
 
     def endElement(self, _):
         self.__start = False
@@ -174,6 +105,95 @@ class StrendaHandler(xml.sax.ContentHandler):
         '''Write SBML to string.'''
         return writeSBMLToString(self.__document)
 
+    def __add_small_compound(self, name, attrs):
+        '''Add small compound.'''
+        species_id = _get_id(attrs['refId'])
+
+        self.__species = self.__model.createSpecies()
+        self.__species.setId(species_id)
+        self.__species.setSBOTerm('SBO:0000247')
+        self.__species.setCompartment(self.__compartment.getId())
+        self.__species.setHasOnlySubstanceUnits(True)
+
+        if attrs['role'] == 'Substrate':
+            self.__spec_ref = self.__reaction.createReactant()
+            self.__spec_ref.setSpecies(species_id)
+            self.__spec_ref.setConstant(False)
+            self.__species.setConstant(False)
+            self.__species.setBoundaryCondition(False)
+        elif attrs['role'] == 'Product':
+            self.__spec_ref = self.__reaction.createProduct()
+            self.__spec_ref.setSpecies(species_id)
+            self.__spec_ref.setConstant(False)
+            self.__species.setConstant(False)
+            self.__species.setBoundaryCondition(False)
+        else:
+            self.__species.setConstant(True)
+            self.__species.setBoundaryCondition(True)
+
+        self.__parent = name
+
+    def __add_protein(self, attrs):
+        '''Add protein.'''
+        self.__species = self.__model.createSpecies()
+        self.__species.setId(_get_id(attrs['uniprotKbAC']))
+        self.__species.setSBOTerm('SBO:0000252')
+        self.__species.setCompartment(self.__compartment.getId())
+        self.__species.setHasOnlySubstanceUnits(True)
+        self.__species.setConstant(True)
+        self.__species.setBoundaryCondition(False)
+
+        _add_annotation(self.__species,
+                        'http://identifiers.org/uniprot/' +
+                        attrs['uniprotKbAC'])
+
+    def __add_macromolecule(self, name, attrs):
+        '''Add macromolecule.'''
+        species_id = _get_id(attrs['refId'])
+
+        self.__species = self.__model.createSpecies()
+        self.__species.setId(species_id)
+        self.__species.setCompartment(self.__compartment.getId())
+        self.__species.setConstant(True)
+        self.__species.setBoundaryCondition(True)
+        self.__species.setHasOnlySubstanceUnits(True)
+
+        if attrs['moleculeClass'] == 'Protein':
+            self.__species.setSBOTerm('SBO:0000252')
+
+        self.__parent = name
+
+    def __add_reaction(self, attrs):
+        '''Add reaction.'''
+        self.__reaction = self.__model.createReaction()
+        self.__reaction.setId(_get_id(uuid.uuid4()))
+        self.__reaction.setName(attrs['name'])
+        self.__reaction.setSBOTerm('SBO:0000176')
+        self.__reaction.setReversible(False)
+        self.__reaction.setFast(False)
+        self.__kinetic_law = self.__reaction.createKineticLaw()
+
+    def __add_value(self, attrs):
+        '''Add value.'''
+        if attrs['type'] == 'Concentration':
+            conc, units = self.__get_value_units(float(attrs['value']),
+                                                 attrs['unit'])
+            self.__species.setInitialConcentration(conc)
+            self.__species.setUnits(units)
+        elif attrs['type'] == 'ConcentrationRange':
+            start_conc, start_units = \
+                self.__get_value_units(float(attrs['startValue']),
+                                       attrs['unit'])
+            end_conc, end_units = \
+                self.__get_value_units(float(attrs['endValue']),
+                                       attrs['unit'])
+
+            self.__species.setInitialConcentration(start_conc)
+            self.__species.setUnits(start_units)
+            self.__species.setConstant(False)
+        elif self.__parent == 'kineticParameter':
+            self.__add_parameter(attrs)
+
     def __add_parameter(self, attrs):
         '''Add parameter.'''
         value, units = self.__get_value_units(float(attrs['value']),
@@ -183,24 +203,31 @@ class StrendaHandler(xml.sax.ContentHandler):
         parameter.setUnits(units)
         parameter.setId(_get_id(uuid.uuid4()))
         parameter.setName(attrs['name'])
-        
-        #TODO: Add SBO Terms
+
+        if attrs['name'] == 'kcat':
+            parameter.setSBOTerm(25)
+        elif attrs['name'] == 'km':
+            parameter.setSBOTerm(373)
 
     def __get_value_units(self, value, units):
         '''Get value and units.'''
         if units == 'mM':
-            return value / 10 ** 3, 'mole'
+            value = value / 10 ** 3
+            units = 'mole'
 
-        if units == 'microM':
-            return value / 10 ** 6, 'mole'
+        elif units == 'microM':
+            value = value / 10 ** 6
+            units = 'mole'
 
-        if units == 'nM':
-            return value / 10 ** 9, 'mole'
-        
-        if units == 'units-ml1':
-            return value * 10 **3, 'item'
+        elif units == 'nM':
+            value = value / 10 ** 9
+            units = 'mole'
 
-        if units == 's-1':
+        elif units == 'units-ml1':
+            value = value * 10 ** 3
+            units = 'item'
+
+        elif units == 's-1':
             unit_def_id = 's_1'
 
             if not self.__model.getUnitDefinition(unit_def_id):
@@ -213,9 +240,9 @@ class StrendaHandler(xml.sax.ContentHandler):
                 unit.setExponent(-1)
                 unit.setKind(UNIT_KIND_SECOND)
 
-            return value, unit_def_id
+            units = unit_def_id
 
-        if units == 'M-1S-1':
+        elif units == 'M-1S-1':
             unit_def_id = 'M_1S_1'
 
             if not self.__model.getUnitDefinition(unit_def_id):
@@ -225,7 +252,7 @@ class StrendaHandler(xml.sax.ContentHandler):
                 unit = unit_def.createUnit()
                 unit.setScale(1)
                 unit.setMultiplier(1)
-                unit.setExponent(-1)
+                unit.setExponent(1)
                 unit.setKind(UNIT_KIND_MOLE)
                 unit = unit_def.createUnit()
                 unit.setScale(1)
@@ -233,7 +260,7 @@ class StrendaHandler(xml.sax.ContentHandler):
                 unit.setExponent(-1)
                 unit.setKind(UNIT_KIND_SECOND)
 
-            return value, unit_def_id
+            units = unit_def_id
 
         return value, units
 
