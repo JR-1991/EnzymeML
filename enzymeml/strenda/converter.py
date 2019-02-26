@@ -111,13 +111,11 @@ class StrendaHandler(xml.sax.ContentHandler):
                                   self.__compartment.getId(),
                                   name)
         else:
-            self.__species = self.__model.createSpecies()
-            self.__species.setId(species_id)
-            self.__species.setCompartment(self.__compartment.getId())
-            self.__species.setConstant(True)
-            self.__species.setBoundaryCondition(True)
-            self.__species.setHasOnlySubstanceUnits(True)
-            self.__species.setSBOTerm('SBO:0000247')
+            self.__species = \
+                utils.add_non_participant(self.__model,
+                                          species_id,
+                                          self.__compartment.getId(),
+                                          sbo_term=247)
 
         self.__parent = name
 
@@ -131,16 +129,13 @@ class StrendaHandler(xml.sax.ContentHandler):
     def __add_macromolecule(self, name, attrs):
         '''Add macromolecule.'''
         species_id = utils.get_id(attrs['refId'])
+        sbo_term = 252 if attrs['moleculeClass'] == 'Protein' else 0
 
-        self.__species = self.__model.createSpecies()
-        self.__species.setId(species_id)
-        self.__species.setCompartment(self.__compartment.getId())
-        self.__species.setConstant(True)
-        self.__species.setBoundaryCondition(True)
-        self.__species.setHasOnlySubstanceUnits(True)
-
-        if attrs['moleculeClass'] == 'Protein':
-            self.__species.setSBOTerm('SBO:0000252')
+        self.__species = \
+            utils.add_non_participant(self.__model,
+                                      species_id,
+                                      self.__compartment.getId(),
+                                      sbo_term=sbo_term)
 
         self.__parent = name
 

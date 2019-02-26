@@ -7,6 +7,7 @@ To view a copy of this license, visit <http://opensource.org/licenses/MIT/>.
 
 @author:  neilswainston
 '''
+# pylint: disable=too-many-arguments
 import re
 import uuid
 
@@ -56,21 +57,36 @@ def add_product(model, reaction, species_id, comp_id, name):
                                      comp_id, False)
 
 
-def add_enzyme(model, enz_id, comp_id, name=None, uniprot_id=None):
+def add_enzyme(model, species_id, comp_id, name=None, uniprot_id=None):
     '''Add enzyme.'''
     species = model.createSpecies()
-    species.setId(enz_id)
+    species.setId(species_id)
     species.setSBOTerm('SBO:0000252')
     species.setCompartment(comp_id)
-    species.setHasOnlySubstanceUnits(True)
     species.setConstant(True)
     species.setBoundaryCondition(False)
+    species.setHasOnlySubstanceUnits(True)
 
     if name:
         species.setName(name)
 
     if uniprot_id:
         add_annotation(species, 'http://identifiers.org/uniprot/' + uniprot_id)
+
+    return species
+
+
+def add_non_participant(model, species_id, comp_id, sbo_term=0):
+    '''Add non-participating species.'''
+    species = model.createSpecies()
+    species.setId(species_id)
+    species.setCompartment(comp_id)
+    species.setConstant(True)
+    species.setBoundaryCondition(True)
+    species.setHasOnlySubstanceUnits(True)
+
+    if sbo_term:
+        species.setSBOTerm(sbo_term)
 
     return species
 
