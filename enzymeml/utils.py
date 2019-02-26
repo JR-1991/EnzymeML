@@ -45,16 +45,18 @@ def add_reaction(model, name, reversible=True):
     return reaction
 
 
-def add_substrate(model, reaction, species_id, comp_id, name=None):
+def add_substrate(model, reaction, species_id, comp_id,
+                  name=None, stoichiometry=1):
     '''Add substrate.'''
     return _add_reaction_participant(model, reaction, species_id, name,
-                                     comp_id, True)
+                                     comp_id, stoichiometry, True)
 
 
-def add_product(model, reaction, species_id, comp_id, name):
+def add_product(model, reaction, species_id, comp_id,
+                name=None, stoichiometry=1):
     '''Add product.'''
     return _add_reaction_participant(model, reaction, species_id, name,
-                                     comp_id, False)
+                                     comp_id, stoichiometry, False)
 
 
 def add_enzyme(model, species_id, comp_id, name=None, uniprot_id=None):
@@ -124,7 +126,7 @@ def add_annotation(obj, resource, qualifier_type=BIOLOGICAL_QUALIFIER,
 
 
 def _add_reaction_participant(model, reaction, species_id, name, comp_id,
-                              is_substrate):
+                              stoichiometry, is_substrate):
     '''Add reaction participant.'''
     species = model.createSpecies()
     species.setId(species_id)
@@ -141,6 +143,7 @@ def _add_reaction_participant(model, reaction, species_id, name, comp_id,
         else reaction.createProduct()
 
     spec_ref.setSpecies(species_id)
+    spec_ref.setStoichiometry(stoichiometry)
     spec_ref.setConstant(False)
 
     return species, spec_ref
