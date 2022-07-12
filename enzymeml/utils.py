@@ -66,7 +66,7 @@ def add_enzyme(model, reaction, species_id, comp_id,
                            constant=True, boundary_condition=False)
 
     if uniprot_id:
-        add_annotation(species, 'http://identifiers.org/uniprot/' + uniprot_id)
+        add_annotation(species, f'http://identifiers.org/uniprot/{uniprot_id}')
 
     spec_ref = reaction.createModifier()
     spec_ref.setSpecies(species_id)
@@ -116,7 +116,7 @@ def add_annotation(obj, resource, qualifier_type=BIOLOGICAL_QUALIFIER,
 
     cv_term.addResource(resource)
 
-    obj.setMetaId('_meta' + obj.getId())
+    obj.setMetaId(f'_meta{obj.getId()}')
     obj.addCVTerm(cv_term)
 
 
