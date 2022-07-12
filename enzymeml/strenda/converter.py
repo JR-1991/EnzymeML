@@ -81,14 +81,15 @@ class StrendaHandler(xml.sax.ContentHandler):
             elif self.__element_name == 'cid':
                 utils.add_annotation(
                     self.__species,
-                    'http://identifiers.org/pubchem.compound/' + content)
+                    f'http://identifiers.org/pubchem.compound/{content}',
+                )
+
             elif self.__element_name == 'chebiId':
                 utils.add_annotation(self.__species,
                                      'http://identifiers.org/chebi/CHEBI:' +
                                      content)
             elif self.__element_name == 'inchi':
-                utils.add_annotation(self.__species,
-                                     'http://identifiers.org/inchi/' + content)
+                utils.add_annotation(self.__species, f'http://identifiers.org/inchi/{content}')
             elif self.__element_name == 'stoichiometry':
                 self.__spec_ref.setStoichiometry(float(content))
             elif self.__element_name == 'commentOnProteinReaction':
